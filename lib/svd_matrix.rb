@@ -3,24 +3,26 @@ require 'svd'
 
 class SVDMatrix < Matrix
   public_class_method :new
-  
+
+  attr_accessor :column_size
+
   # Create a new SVD Matrix with m rows, n columns
   def initialize(m, n)
     @rows = Array.new(m)
     @column_size = n
     m.times {|i| @rows[i] = Array.new(n)}
   end
-  
+
   # Set the value of the cell i, j
   def []=(i, j, val)
     @rows[i][j] = val
   end
-  
+
   # Set the value of a row to an array
   def set_row(i, row)
     @rows[i] = row
   end
-  
+
   # Nicely formatted inspect string for the matrix
   def inspect
     @rows.collect {|row| row.inspect}.join("\n")
@@ -39,24 +41,24 @@ class SVDMatrix < Matrix
     input_array = []
     @rows.each {|row| input_array += row}
     u_array, w_array, v_array = SVD.decompose(input_array, row_size, column_size)
-    
+
     # recompose U matrix
     u = SVDMatrix.new(row_size, reduce_dimensions_to || column_size)
     row_size.times {|i| u.set_row(i, u_array.slice!(0, column_size)[0...(reduce_dimensions_to || column_size)])}
-    
+
     # recompose V matrix
     v = SVDMatrix.new(column_size, reduce_dimensions_to || column_size)
     column_size.times {|i| v.set_row(i, v_array.slice!(0, column_size)[0...(reduce_dimensions_to || column_size)])}
-    
+
     # diagonalise W array as a matrix
     if reduce_dimensions_to
       w_array = w_array[0...reduce_dimensions_to]
     end
     w = Matrix.diagonal(*w_array)
-    
+
     [u, w, v]
   end
-  
+
   # Reduce the number of dimensions of the data to dimensions.
   # Returns a back a recombined matrix (conceptually the original
   # matrix dimensionally reduced). For example Latent Semantic
