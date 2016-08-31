@@ -1,4 +1,4 @@
-require 'mathn'
+require 'matrix'
 require 'svd'
 
 class SVDMatrix < Matrix
